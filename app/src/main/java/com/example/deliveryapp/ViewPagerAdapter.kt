@@ -21,6 +21,10 @@ class ViewPagerAdapter(manager: FragmentManager) : FragmentPagerAdapter(manager)
         fragmentTitleList.add(title)
     }
 
+    fun getFragment(position: Int): Fragment {
+        return fragmentList[position]
+    }
+
     override fun getPageTitle(position: Int): CharSequence? {
         return fragmentTitleList[position]
     }

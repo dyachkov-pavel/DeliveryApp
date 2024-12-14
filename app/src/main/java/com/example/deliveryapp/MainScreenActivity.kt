@@ -6,8 +6,9 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 
 class MainScreenActivity : AppCompatActivity() {
+    val ordersList = mutableListOf<ArrayList<String>>()
 
-    private lateinit var viewPagerAdapter: ViewPagerAdapter
+    lateinit var viewPagerAdapter: ViewPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

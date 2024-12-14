@@ -42,7 +42,7 @@ class OrderDeliveryFragment : Fragment(R.layout.fragment_order_delivery) {
         spinnerVehicleType.adapter = adapter
 
         view.findViewById<Button>(R.id.buttonCalculatePrice).setOnClickListener {
-            calculateTotalPrice(view);
+            calculateTotalPrice(view)
         }
 
         view.findViewById<Button>(R.id.buttonSubmitOrder).setOnClickListener {
@@ -94,22 +94,18 @@ class OrderDeliveryFragment : Fragment(R.layout.fragment_order_delivery) {
         if (view.findViewById<TextInputLayout>(R.id.textInputLayoutDeliveryItem).error != null ||
             view.findViewById<TextInputLayout>(R.id.textInputLayoutAddress).error != null ||
             view.findViewById<TextInputLayout>(R.id.textInputLayoutLoadersCount).error != null) {
-            return // Skip calculation if errors are visible.
+            return
         }
 
         val selectedVehicle = view.findViewById<Spinner>(R.id.spinnerVehicleType).selectedItem.toString()
         val loadersCount = view.findViewById<EditText>(R.id.editTextLoadersCount).text.toString().toInt()
 
         val vehiclePrice = vehiclePrices[selectedVehicle] ?: 0
-        // Base cost per loader
         val baseCostPerLoader = 500
-        // Additional cost for loaders beyond 2
         val additionalCostPerLoader = 250
 
-        // Calculate total price based on the number of loaders
         var totalPrice = baseCostPerLoader * loadersCount
 
-        // Add additional costs if there are more than 2 loaders
         if (loadersCount > 2) {
             totalPrice += (loadersCount - 2) * additionalCostPerLoader
         }
@@ -129,9 +125,39 @@ class OrderDeliveryFragment : Fragment(R.layout.fragment_order_delivery) {
             view.findViewById<TextInputLayout>(R.id.textInputLayoutLoadersCount).error != null) {
             return
         }
-        // Here you can implement logic to submit the order.
-        // For example, you might want to save the order details to a database or send them to a server.
+
+        val deliveryItem = view.findViewById<EditText>(R.id.editTextDeliveryItem).text.toString()
+        val address = view.findViewById<EditText>(R.id.editTextAddress).text.toString()
+        val loadersCount = view.findViewById<EditText>(R.id.editTextLoadersCount).text.toString().toInt()
+        val selectedVehicle = view.findViewById<Spinner>(R.id.spinnerVehicleType).selectedItem.toString()
+
+        val vehiclePrice = vehiclePrices[selectedVehicle] ?: 0
+        val baseCostPerLoader = 500
+        val additionalCostPerLoader = 250
+
+        var totalPrice = baseCostPerLoader * loadersCount
+
+        if (loadersCount > 2) {
+            totalPrice += (loadersCount - 2) * additionalCostPerLoader
+        }
+        totalPrice += vehiclePrice
+
+        val orderDetails = arrayListOf(deliveryItem, address, selectedVehicle, loadersCount.toString(), totalPrice.toString())
+        (activity as MainScreenActivity).ordersList.add(orderDetails)
+
+        val orderListFragment = (activity as MainScreenActivity).viewPagerAdapter.getFragment(1) as? OrderListFragment
+        orderListFragment?.updateOrderList()
+
+        clearInputFields(view)
 
         Toast.makeText(requireContext(), "Заказ отправлен!", Toast.LENGTH_SHORT).show()
     }
+
+    private fun clearInputFields(view: View) {
+        view.findViewById<EditText>(R.id.editTextDeliveryItem).text.clear()
+        view.findViewById<EditText>(R.id.editTextAddress).text.clear()
+        view.findViewById<EditText>(R.id.editTextLoadersCount).text.clear()
+        view.findViewById<TextView>(R.id.textViewTotalPrice).text = ""
+    }
+
 }
